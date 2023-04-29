@@ -5,11 +5,15 @@ namespace App\Controller\Api\V1;
 
 
 use App\Controller\BaseController;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Response;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
 
 /**
  * Class TtsController
@@ -18,6 +22,20 @@ use Hyperf\HttpServer\Response;
  */
 class TtsController extends BaseController
 {
+
+
+    /**
+     * @Inject()
+     * @var Filesystem $filesystem
+     */
+    protected $filesystem;
+
+
+    /**
+     * @Inject()
+     * @var FilesystemFactory $factory
+     */
+    protected $factory;
 
 
     protected static $userList = [
@@ -31,9 +49,10 @@ class TtsController extends BaseController
 
     /**
      *
+     * @GetMapping(path="")
      * @param RequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface
-     * @GetMapping(path="")
+     * @throws FilesystemException
      */
     public function index(RequestInterface $request)
     {
@@ -43,19 +62,19 @@ class TtsController extends BaseController
 
         $user = $request->input('user', '');
 
-
         $userName = !isset(self::$userList[$user]) ? '' : self::$userList[$user]['Name'];
 
+        $fileName = date('YdHis').'-'.uniqid().'.mp3';
 
-        $fileName = date('dHis').'-'.uniqid().'.mp3';
+        $path = BASE_PATH.'/public/tts/'.$fileName;
 
-        $path = '/docker/hyperf_tts/public/tts/'.$fileName;
 
         try {
 
             $this->textToMp3($msg, $userName, $path);
+            $factory = $this->factory->get('tts');
 
-            $fileData = file_get_contents($path);
+            $fileData = $factory->read($fileName);
 
             return $response->withHeader('content-type', 'audio/mpeg')
                 ->withHeader('content-disposition', "inline;filename={$fileName}")
@@ -65,7 +84,6 @@ class TtsController extends BaseController
         } catch (\Exception $exception) {
             return $response->json(['error' => $exception->getMessage()]);
         }
-
 
     }
 
