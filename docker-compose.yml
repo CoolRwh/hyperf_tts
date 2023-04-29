@@ -11,4 +11,4 @@ services:
     ports:
       - "9501:9501"
     volumes:
-      - 'docker/wwwroot/hyperf_tts:/docker/hyperf_tts'
+      - '/docker/wwwroot/hyperf_tts:/docker/hyperf_tts'

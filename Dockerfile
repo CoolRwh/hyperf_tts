@@ -12,6 +12,15 @@ RUN apk update
 RUN apk add python3 && /usr/bin/python3.8 -m pip install --upgrade pip &&  pip3 install edge-tts
 
 
+# Composer Cache
+# COPY ./composer.* /opt/www/
+# RUN composer install --no-dev --no-scripts
+
+COPY . /docker/wwwroot/hyperf_tts
+
+RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer
+
+RUN composer install --no-dev -o
 
 EXPOSE 9501
 
