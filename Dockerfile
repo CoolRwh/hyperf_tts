@@ -24,7 +24,7 @@ COPY . /docker/hyperf_tts
 
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer
 
-RUN composer install --no-dev -o
+RUN composer install --no-dev -o && php bin/hyperf.php start
 
 EXPOSE 9501
 
