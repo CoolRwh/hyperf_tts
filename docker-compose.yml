@@ -1,0 +1,14 @@
+version: "3.1"
+services:
+  hyperf:
+    image: 'tts/php74:v1.0.0'
+    container_name: hyperf
+    hostname: hyperf
+    privileged: true
+    restart: always
+    working_dir: /docker
+    command: ['php','/docker/hyperf_tts/bin/hyperf.php','start']
+    ports:
+      - "9501:9501"
+    volumes:
+      - 'docker/wwwroot/hyperf_tts:/docker/hyperf_tts'
