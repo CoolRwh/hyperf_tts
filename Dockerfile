@@ -18,9 +18,9 @@ RUN apk add python3 && /usr/bin/python3.8 -m pip install --upgrade pip &&  pip3 
 
 
 
-WORKDIR /docker/wwwroot/hyperf_tts
+WORKDIR /docker/hyperf_tts
 
-COPY . /docker/wwwroot/hyperf_tts
+COPY . /docker/hyperf_tts
 
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer
 
