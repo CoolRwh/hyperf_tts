@@ -6,7 +6,9 @@ services:
     hostname: hyperf
     privileged: true
     restart: always
-    command: ['php','bin/hyperf.php','start']
+    working_dir: /docker/hyperf_tts
+#    command: ['php','bin/hyperf.php','start']
+    command: ["/bin/sh"]
     ports:
       - "9501:9501"
     volumes:
