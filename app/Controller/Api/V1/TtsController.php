@@ -55,10 +55,10 @@ class TtsController extends BaseController
      */
     public function index(RequestInterface $request)
     {
-
+        $response = new Response();
         $data = $request->all();
         if (!isset($data['text']) || trim($data['text']) == ''){
-            return "内容不能为空！";
+            return $response->json(['err'=>'内容不能为空！']);
         }
         $text = trim($data['text']);
 
@@ -74,14 +74,14 @@ class TtsController extends BaseController
                 $this->textToMp3($text, $userName, $path);
             }
             $fileData = $factory->read($fileName);
-            $response = new Response();
+
             return $response->withHeader('Content-Type', 'audio/mpeg;charset=utf-8')
                 ->withHeader('Connection', "keep-alive")
                 ->withHeader('content-disposition', "inline;filename={$fileName}")
                 ->withHeader('Cache-Control', 'no-cache')
                 ->withBody(new SwooleStream($fileData));
         } catch (\Exception $exception) {
-            return $response->json();
+            return $response->json(['err'=>$exception]);
         }
 
     }
