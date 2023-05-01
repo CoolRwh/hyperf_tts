@@ -48,41 +48,40 @@ class TtsController extends BaseController
     ];
 
     /**
-     *
-     * @GetMapping(path="")
+     *@GetMapping(path="")
      * @param RequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|string
      * @throws FilesystemException
      */
     public function index(RequestInterface $request)
     {
 
-        $response = new Response();
-        $msg = $request->input('msg', '你好！');
+        $data = $request->all();
+        if (!isset($data['text']) || trim($data['text']) == ''){
+            return "内容不能为空！";
+        }
+        $text = trim($data['text']);
 
-        $user = $request->input('user', '');
-
-        $userName = !isset(self::$userList[$user]) ? '' : self::$userList[$user]['Name'];
-
-        $fileName = date('Ymd-Hi').'-'.uniqid().'.mp3';
-
-        $path = BASE_PATH.'/public/tts/'.$fileName;
-
+        $user = $request->input('user');
 
         try {
 
-            $this->textToMp3($msg, $userName, $path);
             $factory = $this->factory->get('tts');
-
+            $userName = !isset(self::$userList[$request->input('user')]) ? '' : self::$userList[$user]['Name'];
+            $fileName = md5($text).'.mp3';
+            $path = BASE_PATH.'/public/tts/'.$fileName;
+            if (!$factory->fileExists($fileName)) {
+                $this->textToMp3($text, $userName, $path);
+            }
             $fileData = $factory->read($fileName);
-
-            return $response->withHeader('content-type', 'audio/mpeg')
+            $response = new Response();
+            return $response->withHeader('Content-Type', 'audio/mpeg;charset=utf-8')
+                ->withHeader('Connection', "keep-alive")
                 ->withHeader('content-disposition', "inline;filename={$fileName}")
                 ->withHeader('Cache-Control', 'no-cache')
-                ->withHeader('Cache-Control', 'no-chunked')
                 ->withBody(new SwooleStream($fileData));
         } catch (\Exception $exception) {
-            return $response->json(['error' => $exception->getMessage()]);
+            return $response->json();
         }
 
     }
@@ -105,7 +104,6 @@ class TtsController extends BaseController
         );
 
         return shell_exec($cmd1);
-//        return exec($cmd1.' 2>&1',$output,$status);
     }
 
 
