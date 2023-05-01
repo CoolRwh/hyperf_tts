@@ -64,7 +64,7 @@ class TtsController extends BaseController
 
         $userName = !isset(self::$userList[$user]) ? '' : self::$userList[$user]['Name'];
 
-        $fileName = date('YdHis').'-'.uniqid().'.mp3';
+        $fileName = date('Ymd-Hi').'-'.uniqid().'.mp3';
 
         $path = BASE_PATH.'/public/tts/'.$fileName;
 
@@ -105,6 +105,7 @@ class TtsController extends BaseController
         );
 
         return shell_exec($cmd1);
+//        return exec($cmd1.' 2>&1',$output,$status);
     }
 
 
