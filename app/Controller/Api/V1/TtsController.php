@@ -60,6 +60,12 @@ class TtsController extends BaseController
         if (!isset($data['text']) || trim($data['text']) == ''){
             return $response->json(['err'=>'内容不能为空！']);
         }
+
+        $volume = 100;
+        if (!empty($data['volume'])){
+            $volume = intval($data['volume']);
+        }
+
         $text = trim($data['text']);
 
         $user = $request->input('user');
@@ -71,14 +77,14 @@ class TtsController extends BaseController
             $fileName = md5($text).'.mp3';
             $path = BASE_PATH.'/public/tts/'.$fileName;
             if (!$factory->fileExists($fileName)) {
-                $this->textToMp3($text, $userName, $path);
+                $this->textToMp3($text, $userName, $path,$volume);
             }
             $fileData = $factory->read($fileName);
 
             return $response->withHeader('Connection', "keep-alive")
                 ->withHeader('Content-Type', 'audio/mpeg;charset=utf-8')
                 // ->withHeader('content-disposition', "inline;filename={$fileName}")
-                // ->withHeader('Cache-Control', 'no-cache')
+                ->withHeader('Cache-Control', 'no-cache')
                 ->withBody(new SwooleStream($fileData));
         } catch (\Exception $exception) {
             return $response->json(['err'=>$exception]);
@@ -94,10 +100,10 @@ class TtsController extends BaseController
      * @param string $path 系统根路径
      * @return string|null
      */
-    public function textToMp3($msg = '1', string $user = 'zh-CN-XiaoyiNeural', $path = '')
+    public function textToMp3($msg = '1', string $user = 'zh-CN-XiaoyiNeural', $path = '',$volume=50)
     {
         $cmd1 = sprintf(
-            'edge-tts --voice %s --text "%s" --write-media %s',
+            'edge-tts --volume=$s% --voice=%s --text="%s" --write-media %s',
             $user,
             $msg,
             $path
