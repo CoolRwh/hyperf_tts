@@ -104,7 +104,7 @@ class TtsController extends BaseController
     {
         $volume = $volume."%";
         $cmd1 = sprintf(
-            'edge-tts --volume=%s --voice %s --text="%s" --write-media %s',
+            'edge-tts --volume=%s --voice %s --text=%s --write-media %s',
             $volume,
             $user,
             $msg,
