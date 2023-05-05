@@ -102,15 +102,12 @@ class TtsController extends BaseController
      */
     public function textToMp3($msg = '1', string $user = 'zh-CN-XiaoyiNeural', $path = '',$volume=50)
     {
-        $volume = $volume >= 0 ? "+".$volume : "-".$volume;
         $cmd1 = sprintf(
-            'edge-tts --volume="%s" --voice %s --text="%s" --write-media %s',
-            $volume."%",
+            'edge-tts  --voice %s --text="%s" --write-media %s',
             $user,
             $msg,
             $path
         );
-
         return shell_exec($cmd1);
     }
 
