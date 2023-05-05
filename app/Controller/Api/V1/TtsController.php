@@ -75,10 +75,10 @@ class TtsController extends BaseController
             }
             $fileData = $factory->read($fileName);
 
-            return $response->withHeader('Content-Type', 'audio/mpeg;charset=utf-8')
-                ->withHeader('Connection', "keep-alive")
-                ->withHeader('content-disposition', "inline;filename={$fileName}")
-                ->withHeader('Cache-Control', 'no-cache')
+            return $response->withHeader('Connection', "keep-alive")
+                ->withHeader('Content-Type', 'audio/mpeg;charset=utf-8')
+                // ->withHeader('content-disposition', "inline;filename={$fileName}")
+                // ->withHeader('Cache-Control', 'no-cache')
                 ->withBody(new SwooleStream($fileData));
         } catch (\Exception $exception) {
             return $response->json(['err'=>$exception]);
